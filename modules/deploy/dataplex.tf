@@ -13,13 +13,14 @@
 # limitations under the License.
 
 resource "google_dataplex_datascan" "dq_scan" {
-  for_each = toset(local.bigquery_table_name)
+ 
   location     = var.region
   data_scan_id = "rashmi-scan"
   labels = {
     environment = local.env
   }
 
+ for_each = toset(local.bigquery_table_name)
   data {
     resource = "//bigquery.googleapis.com/projects/${var.source_project}/datasets/${var.source_dataset}/tables/${each.value}"
   }
