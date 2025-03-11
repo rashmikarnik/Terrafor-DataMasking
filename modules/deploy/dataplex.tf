@@ -20,7 +20,7 @@ resource "google_dataplex_datascan" "dq_scan" {
   }
 
   data {
-    resource = "//bigquery.googleapis.com/projects/${var.source_project}/datasets/${var.source_dataset}/tables/${var.source_table}"
+    resource = "//bigquery.googleapis.com/projects/${var.source_project}/datasets/${var.source_dataset}/tables/${local.bigquery_table_name}"
   }
 
   execution_spec {

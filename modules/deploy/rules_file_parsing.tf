@@ -39,6 +39,9 @@ locals {
     }
   ]
   ])
+    _file_data_quality_spec_raw = [
+    for dq_file in local.data_quality_spec_file : yamldecode(file("${path.module}/${dq_file}"))
+  ]
 
   # Use these in Dataplex definition
   sampling_percent = try(local._file_data_quality_spec_raw.samplingPercent, local._file_data_quality_spec_raw.sampling_percent, null)

@@ -46,12 +46,12 @@ resource "google_bigquery_job" "job" {
  
 
   query {
-    query = "SELECT * FROM `${var.source_project}.${var.source_dataset}.${var.source_table}"
+    query = "SELECT * FROM `${var.source_project}.${var.source_dataset}.${local.bigquery_table_name}"
 
     destination_table {
       project_id = var.source_project
       dataset_id = var.source_dataset
-      table_id   = var.source_table
+      table_id   = local.bigquery_table_name
     }
   }
 }
