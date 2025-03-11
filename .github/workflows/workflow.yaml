@@ -1,205 +1,46 @@
-name: "Terraform CI"
-
 on:
   push:
     branches:
       - dev
-    paths:
-      - ".github/workflows/workflow.yaml"
   pull_request:
 
-permissions:
-  id-token: write
-  contents: read
-
-env:
-  PROJECT_ID: ${{ secrets.PROJECT_ID }}
-
 jobs:
-  set_environment:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up dev Environment Variables
-        if: ${{ github.event_name == 'push' }}
-        run: echo "environment=dev" >> $GITHUB_ENV
-    outputs:
-      environment_name: ${{ env.environment }}
-
   terraform:
     name: "Terraform"
     runs-on: ubuntu-latest
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
       run:
         shell: bash
-    environment: dev
+
     steps:
+      # Checkout the repository to the GitHub Actions runner - comment
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Print IDENTITY_PROVIDER
-        run: |
-          IDENTITY_PROVIDER="${{ secrets.IDENTITY_PROVIDER }}"
-          echo "IDENTITY_PROVIDER: $IDENTITY_PROVIDER"
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-          project_id: ${{ env.PROJECT_ID }}
-
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
 
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         run: terraform init -input=false
         working-directory: ./environments/dev
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
+      # Generates an execution plan for Terraform
       - name: Terraform Plan
         run: terraform plan -input=false
         working-directory: ./environments/dev
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
+        # On push to main, build or change infrastructure according to Terraform configuration files
+        # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ./environments/dev
-# name: "Terraform CI"
-
-# on:
-#   push:
-#     branches:
-#       - dev
-#     paths:
-#       - ".github/workflows/workflow.yaml"
-#   pull_request:
-
-# permissions:
-#   id-token: write
-#   contents: read
-
-# env:
-#   PROJECT_ID: ${{ vars.PROJECT_ID }}
-
-# jobs:
-#   set_environment:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Set up dev Environment Variables
-#         if: ${{ github.event_name == 'push' }}
-#         run: echo "environment=dev" >> $GITHUB_ENV
-#     outputs:
-#       environment_name: ${{ env.environment }}
-
-#   terraform:
-#     name: "Terraform"
-#     runs-on: ubuntu-latest
-
-#     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-#     defaults:
-#       run:
-#         shell: bash
-
-#     steps:
-#       # Checkout the repository to the GitHub Actions runner - comment
-#       - name: Checkout
-#         uses: actions/checkout@v2
-
-#       # Added debug - needs to remove later
-#       - name: Debug
-#         run: |
-#           echo "IDENTITY_PROVIDER: $IDENTITY_PROVIDER"
-#           echo "SERVICE_ACCOUNT_EMAIL: $SERVICE_ACCOUNT_EMAIL"
-#         # Authenticate to Google Cloud using Workload Identity Federation
-#       - name: Authenticate to Google Cloud
-#         uses: google-github-actions/auth@v1
-#         with:
-#           workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
-#           # service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-#           project_id: ${{ env.PROJECT_ID }}
-
-#       # Set GCP Authentication for Terraform
-#       # - name: Set GCP Authentication for Terraform
-#       #   run: |
-#       #     echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/credential.json" >> $GITHUB_ENV
-
-#       # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-#       - name: Setup Terraform
-#         uses: hashicorp/setup-terraform@v1
-
-#       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-#       - name: Terraform Init
-#         run: terraform init -input=false
-#         working-directory: ./environments/dev
-#         # env:
-#         #   PROJECT_ID: ${{ secrets.PROJECT_ID }}
-
-#       # Generates an execution plan for Terraform
-#       - name: Terraform Plan
-#         run: terraform plan -input=false
-#         working-directory: ./environments/dev
-#         # env:
-#         #   PROJECT_ID: ${{ secrets.PROJECT_ID }}
-
-#         # On push to main, build or change infrastructure according to Terraform configuration files
-#         # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-#       - name: Terraform Apply
-#         run: terraform apply -auto-approve
-#         working-directory: ./environments/dev
-#         # env:
-#         #   PROJECT_ID: ${{ secrets.PROJECT_ID }}
-# # name: "Terraform CI"
-
-# # on:
-# #   push:
-# #     branches:
-# #       - dev
-# #   pull_request:
-
-# # jobs:
-# #   terraform:
-# #     name: "Terraform"
-# #     runs-on: ubuntu-latest
-
-# #     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-# #     defaults:
-# #       run:
-# #         shell: bash
-
-# #     steps:
-# #       # Checkout the repository to the GitHub Actions runner - comment
-# #       - name: Checkout
-# #         uses: actions/checkout@v2
-
-# #       # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-# #       - name: Setup Terraform
-# #         uses: hashicorp/setup-terraform@v1
-
-# #       - name: Authenticate to Google Cloud
-# #         uses: google-github-actions/auth@v1
-# #         with:
-# #             workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
-# #             service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-# #         env:
-# #           IDENTITY_PROVIDER: ${{ secrets.IDENTITY_PROVIDER }}
-# #           SERVICE_ACCOUNT_EMAIL: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-
-# #       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-# #       - name: Terraform Init
-# #         run: terraform init -input=false
-# #         working-directory: ./environments/dev
-# #         env:
-# #           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-
-# #       # Generates an execution plan for Terraform
-# #       - name: Terraform Plan
-# #         run: terraform plan -input=false
-# #         working-directory: ./environments/dev
-# #         env:
-# #           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-
-# #         # On push to main, build or change infrastructure according to Terraform configuration files
-# #         # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-# #       - name: Terraform Apply
-# #         run: terraform apply -auto-approve
-# #         working-directory: ./environments/dev
-# #         env:
-# #           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
