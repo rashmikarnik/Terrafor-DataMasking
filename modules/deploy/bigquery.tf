@@ -48,7 +48,7 @@ resource "google_bigquery_job" "job" {
  
 
   query {
-    query = "SELECT * FROM `${var.source_project}.${var.source_dataset}.${each.value}"
+    query = "SELECT * FROM `${var.source_project}.${var.source_dataset}.${each.value}`"
 
     destination_table {
       project_id = var.source_project
