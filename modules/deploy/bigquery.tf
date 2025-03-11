@@ -53,7 +53,7 @@ resource "google_bigquery_job" "job" {
     destination_table {
       project_id = var.source_project
       dataset_id = var.source_dataset
-      table_id   = local.bigquery_table_name
+      table_id   = each.value
     }
   }
 }
