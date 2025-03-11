@@ -86,7 +86,7 @@ variable "bigquery_table_name" {
 variable "source_dq_file" {
   type        = list(string)
   description = "data quality files"
-  default     = ["/rules/epmpins.yaml","/rules/orders.dev.yaml"]
+  default     = ["/rules/epmpins.yaml","/rules/orders.yaml"]
 }
 
 variable "data_quality_spec_file" {

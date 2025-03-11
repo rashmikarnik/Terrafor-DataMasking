@@ -36,6 +36,8 @@
 # }
 
 resource "google_bigquery_job" "job" {
+  for_each = toset(local.bigquery_table_name)
+
   project = module.project-services.project_id
   job_id  = "rashmi_${random_id.id.hex}"
 
@@ -46,7 +48,7 @@ resource "google_bigquery_job" "job" {
  
 
   query {
-    query = "SELECT * FROM `${var.source_project}.${var.source_dataset}.${local.bigquery_table_name}"
+    query = "SELECT * FROM `${var.source_project}.${var.source_dataset}.${each.value}"
 
     destination_table {
       project_id = var.source_project
