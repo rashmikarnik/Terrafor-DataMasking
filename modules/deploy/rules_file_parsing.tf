@@ -1,7 +1,8 @@
 locals {
-  _file_data_quality_spec_raw = yamldecode(file("${path.module}/${var.data_quality_spec_file}"))
-  _parsed_rules = [
-    for rule in try(local._file_data_quality_spec_raw.rules, []) : {
+
+  _parsed_rules = flatten([
+    for dq_file in local.data_quality_spec_file : [
+      for rule in try(yamldecode(file("${path.module}/${dq_file}"))).rules: {
       column               = try(rule.column, null)
       ignore_null          = try(rule.ignoreNull, rule.ignore_null, null)
       dimension            = rule.dimension
@@ -37,6 +38,7 @@ locals {
       } : null
     }
   ]
+  ])
 
   # Use these in Dataplex definition
   sampling_percent = try(local._file_data_quality_spec_raw.samplingPercent, local._file_data_quality_spec_raw.sampling_percent, null)

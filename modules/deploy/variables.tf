@@ -66,9 +66,9 @@ variable "source_dataset" {
 }
 
 variable "source_table" {
-  type        = string
+  type        = list(string)
   description = "Source table for the data"
-  default     = "EPM_PINS_UDOT"
+  default     = ["EPM_PINS_UDOT","dev"]
 }
 
 variable "schema_file" {
@@ -83,12 +83,19 @@ variable "bigquery_table_name" {
   
 }
 
-locals {
-  bigquery_table_name = "${var.source_project}.${var.source_dataset}.${var.source_table}"
+variable "source_dq_file" {
+  type        = list(string)
+  description = "data quality files"
+  default     = ["/rules/epmpins.yaml","/rules/orders.dev.yaml"]
 }
 
 variable "data_quality_spec_file" {
   type        = string
-  description = "Path to a YAML file containing DataQualityScan related setting. Input content can use either camelCase or snake_case. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec."
-  default     = "/rules/epmpins.yaml"
+  description = "data quality files"
+ 
+}
+
+locals {
+  bigquery_table_name = [for table in var.source_table : "${var.source_project}.${var.source_dataset}.${table}"]
+  data_quality_spec_file = [for dqFileName in var.source_dq_file :"${dqFileName}"]
 }
