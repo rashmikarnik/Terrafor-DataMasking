@@ -96,7 +96,7 @@ variable "data_quality_spec_file" {
 }
 
 locals {
-  bigquery_table_name = [for table in var.source_table : "${var.source_project}.${var.source_dataset}.${table}"]
+  bigquery_table_name = [for table in var.source_table : trim("${var.source_project}.${var.source_dataset}.${table}",".")]
   //data_quality_spec_file = [for dqFileName in var.source_dq_file :"${dqFileName}"]
   data_quality_spec_file = var.source_dq_file
 }
