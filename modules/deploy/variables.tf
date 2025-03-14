@@ -1,16 +1,3 @@
-# Copyright 2023 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 variable "project_id" {
   type        = string
@@ -71,16 +58,21 @@ variable "source_table" {
   default     = ["EPM_PINS_UDOT","dev"]
 }
 
-variable "schema_file" {
-  type        = string
-  description = "Schema file for table"
-  default     = "schemas/orders_schema.json"
-}
+# variable "schema_file" {
+#   type        = string
+#   description = "Schema file for table"
+#   default     = "schemas/orders_schema.json"
+# }
 
 variable "bigquery_table_name" {
   type        = string
   description = "Name ot the BQ table"
   
+}
+
+variable "table_name"{
+   type        = string
+   description = "only table name"
 }
 
 variable "source_dq_file" {
@@ -94,9 +86,29 @@ variable "data_quality_spec_file" {
   description = "data quality files"
  
 }
+# variable "rashmi" {
+#   type        = string
+#   description = "data quality files"
+# }
+variable "table_to_dq_file" {
+  type = map(string)
+  default = {
+    "EPM_PINS_UDOT" = "/rules/epmpins.yaml",
+    "dev"             = "/rules/orders.yaml",
+  }
+}
+
 
 locals {
-  bigquery_table_name = [for table in var.source_table : trim("${var.source_project}.${var.source_dataset}.${table}",".")]
-  //data_quality_spec_file = [for dqFileName in var.source_dq_file :"${dqFileName}"]
-  data_quality_spec_file = var.source_dq_file
+  bigquery_table_name = [for table in var.source_table : "${var.source_project}.${var.source_dataset}.${table}"]
+  table_name = [for tableName in var.source_table:"${tableName}"]
+  //table_to_dq_file     = zipmap(var.source_table, var.source_dq_file)
+ // data_quality_spec_file = local.table_to_dq_file[var.table_name]
+ // rashmi = values(local.table_to_dq_file)
+  //data_quality_spec_file = var.source_dq_file
+  data_quality_spec_file = { for table_name in var.source_table : table_name => var.table_to_dq_file[table_name] }
+}
+
+output "tttttt"{
+  value = local.data_quality_spec_file
 }

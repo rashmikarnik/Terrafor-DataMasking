@@ -9,6 +9,19 @@ rules:
     threshold: 0.0
     rowConditionCheckExpectation:
       sqlExpression: LOWER(PIN_DESC) LIKE 'test'
+table_level_rules:
+  - aggregation_expectation:
+      column: column_name
+      aggregation: SUM
+      min_value: 100
+      max_value: 1000
+      description: Sum of column_name should be between 100 and 1000
+  - aggregation_expectation:
+      column: another_column
+      aggregation: AVG
+      min_value: 0
+      max_value: 100
+      description: Average of another_column should be between 0 and 100
   # - column: user_id
   #   dimension: COMPLETENESS
   #   name: non-null

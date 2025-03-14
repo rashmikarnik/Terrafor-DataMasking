@@ -36,24 +36,25 @@
 # }
 
 resource "google_bigquery_job" "job" {
-  for_each = toset(local.bigquery_table_name)
-
+  //for_each = toset(local.bigquery_table_name)
+ count = length(local.table_name)
   project = module.project-services.project_id
-  job_id  = "rashmi_${random_id.id.hex}"
+  job_id  = "${local.table_name[count.index]}_${random_id.id.hex}"
 
   labels = {
     "env" = local.env
   }
-
- 
-
   query {
-    query = "SELECT * FROM `${var.source_project}.${var.source_dataset}.${each.value}`"
+    query = "SELECT * FROM `${var.source_project}.${var.source_dataset}.${local.table_name[count.index]}`"
+    //query = "SELECT * FROM `${var.source_project}.${var.source_dataset}.${local.bigquery_table_name[count.index]}`"
 
     destination_table {
       project_id = var.source_project
       dataset_id = var.source_dataset
-      table_id   = each.value
+      table_id   = local.table_name[count.index]
     }
+  }
+  lifecycle {
+    ignore_changes = [job_id]
   }
 }

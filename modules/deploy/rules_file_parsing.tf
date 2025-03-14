@@ -1,8 +1,15 @@
-locals {
 
-  _parsed_rules = flatten([
-    for dq_file in local.data_quality_spec_file : [
-      for rule in try(yamldecode(file("${path.module}/${dq_file}"))).rules: {
+
+locals {
+//table_to_dq_file     = zipmap(var.source_table, var.source_dq_file)
+//matched_dq_file   = [for table in var.source_table : local.table_to_dq_file[table]]
+ //count = length(local.matched_dq_file)
+//matched_dq_file   = local.table_to_dq_file[local.table_name]
+_parsed_rules = flatten([
+    //for dq_file in local.table_to_dq_file : [
+   { for table, file in local.data_quality_spec_file : table => [
+   //for dq_file in local.data_quality_spec_file : [
+      for rule in try(yamldecode(file("${path.module}/${file}"))).rules: {
       column               = try(rule.column, null)
       ignore_null          = try(rule.ignoreNull, rule.ignore_null, null)
       dimension            = rule.dimension
@@ -37,14 +44,39 @@ locals {
         sql_expression = try(rule.tableConditionExpectation.sqlExpression, rule.table_condition_expectation.sql_expression, null)
       } : null
     }
-  ]
+  
+  ]}
   ])
     _file_data_quality_spec_raw = [
     for dq_file in local.data_quality_spec_file : yamldecode(file("${path.module}/${dq_file}"))
   ]
 
+    # _file_data_quality_spec_raw =yamldecode(file("${path.module}/${local.matched_dq_file}"))
+
+
   # Use these in Dataplex definition
-  sampling_percent = try(local._file_data_quality_spec_raw.samplingPercent, local._file_data_quality_spec_raw.sampling_percent, null)
-  row_filter       = try(local._file_data_quality_spec_raw.rowFilter, local._file_data_quality_spec_raw.row_filter, null)
+  # sampling_percent = try(local._file_data_quality_spec_raw.samplingPercent, local._file_data_quality_spec_raw.sampling_percent, null)
+  # row_filter       = try(local._file_data_quality_spec_raw.rowFilter, local._file_data_quality_spec_raw.row_filter, null)
+  sampling_percent = [
+  for raw in local._file_data_quality_spec_raw : try(raw.samplingPercent, raw.sampling_percent, null)
+]
+row_filter = [
+  for raw in local._file_data_quality_spec_raw : try(raw.rowFilter, raw.row_filter, null)
+]
   rules            = local._parsed_rules
 }
+
+
+output "dq_file_paths" {
+  value = local.data_quality_spec_file
+ 
+}
+
+output "parsed_yaml" {
+  value = {for table, file in local.data_quality_spec_file : table => try(yamldecode(file("${path.module}/${file}")), null)}
+}
+
+# output "rrrrr" {
+#   value = local.rules
+ 
+# }

@@ -26,5 +26,8 @@ module "project-services" {
 
 #random static id
 resource "random_id" "id" {
-  byte_length = 4
+ keepers = {
+    first = "${timestamp()}"
+  }     
+  byte_length = 8
 }
