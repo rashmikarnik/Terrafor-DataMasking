@@ -127,6 +127,10 @@ resource "google_dataplex_datascan" "dq_scan" {
   project = module.project-services.project_id
 
   depends_on = [google_bigquery_job.job]
+
+lifecycle {
+    create_before_destroy = false
+  }
 }
 
 output "rules" {
