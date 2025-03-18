@@ -1,0 +1,68 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+samplingPercent: 100
+rowFilter:
+rules:
+  - column: order_id
+    dimension: COMPLETENESS
+    name: non-null
+    description: Sample rule for non-null column
+    threshold: 1.0
+    non_null_expectation: {}
+  - column: user_id
+    dimension: COMPLETENESS
+    name: non-null
+    description: Sample rule for non-null column
+    threshold: 1.0
+    non_null_expectation: {}
+  - column: created_at
+    description: Sample rule for non-null column
+    dimension: COMPLETENESS
+    name: non-null
+    threshold: 1.0
+    non_null_expectation: {}
+  - column: order_id
+    dimension: UNIQUENESS
+    name: unique
+    description: Sample rule for unique column
+    uniqueness_expectation: {}
+  - column: status
+    dimension: VALIDITY
+    name: one-of-set
+    description: Sample rule for values in a set
+    ignore_null: false
+    set_expectation:
+      values:
+      - Shipped
+      - Complete
+      - Processing
+      - Cancelled
+      - Returned
+  - column: num_of_item
+    dimension: VALIDITY
+    name: range-values
+    description: Sample rule for values in a range
+    ignore_null: false
+    threshold: 0.99
+    range_expectation:
+      max_value: '1'
+      # min_value:
+      strict_max_enabled: false
+      strict_min_enabled: false
+  - dimension: VALIDITY
+    name: not-empty-table
+    description: Sample rule for a non-empty table
+    tableConditionExpectation:
+      sqlExpression: COUNT(*) > 0
