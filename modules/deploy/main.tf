@@ -1,4 +1,11 @@
-/**/
+/*
+The module is named project-services.
+The source attribute specifies the location of the external module, which is a Google Cloud Platform (GCP) project factory module.
+The version attribute specifies the version of the module to use.
+The disable_services_on_destroy attribute is set to false, which means that services will not be disabled when the Terraform configuration is destroyed.
+The project_id and enable_apis attributes are set to the values of the corresponding input variables.
+The activate_apis attribute is a list of APIs that should be activated in the GCP project.
+*/
 locals {
   env = var.environment
 }
@@ -26,7 +33,7 @@ module "project-services" {
 
 #random static id
 resource "random_id" "id" {
- keepers = {
+keepers = {
     first = "${timestamp()}"
   }     
   byte_length = 8

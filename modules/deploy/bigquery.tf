@@ -1,43 +1,12 @@
 /**
- * Copyright 2023 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-# Set up BigQuery resources
-# # Create the BigQuery dataset
-# resource "google_bigquery_dataset" "dataset" {
-#   project                    = module.project-services.project_id
-#   dataset_id                 = "rashmi_${random_id.id.hex}"
-#   friendly_name              = "rashmi table"
-#   description                = "rashmi table"
-#   location                   = var.region
-#   labels                     = var.labels
-#   delete_contents_on_destroy = var.force_destroy
-# }
-
-# resource "google_bigquery_table" "table" {
-#   project             = module.project-services.project_id
-#   deletion_protection = var.deletion_protection
-#   dataset_id          = google_bigquery_dataset.dataset.dataset_id
-#   table_id            = local.env
-
-#   schema = file("${path.module}/${var.schema_file}")
-# }
+This Terraform code creates a Google BigQuery job for each table name in local.table_name. 
+It constructs a unique job ID, executes a SQL query to select all rows from the specified table, and stores the results in a destination table. 
+The lifecycle configuration ensures that changes to the job ID do not trigger a resource recreation.
+*/
 
 resource "google_bigquery_job" "job" {
   //for_each = toset(local.bigquery_table_name)
- count = length(local.table_name)
+count = length(local.table_name)
   project = module.project-services.project_id
   job_id  = "${local.table_name[count.index]}_${random_id.id.hex}"
 

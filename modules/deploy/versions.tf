@@ -1,3 +1,9 @@
+/*
+The code uses a Terraform module from the "terraform-google-modules" repository, specifically the "project-factory" module, version 17.0.0.
+The disable_services_on_destroy variable is set to false, which means that when the Terraform configuration is destroyed, the enabled APIs will not be disabled.
+*/
+
+
 terraform {
   required_providers {
     google = {

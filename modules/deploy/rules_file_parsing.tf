@@ -1,14 +1,19 @@
+/*
+1. yamlcode : yamldecode function to parse the YAML files and extract the data quality rules.
+2. flatten: is a collection function akes a list and replaces any elements that are lists with a flattened sequence of the list contents.
 
+
+
+**/
 
 locals {
-//table_to_dq_file     = zipmap(var.source_table, var.source_dq_file)
-//matched_dq_file   = [for table in var.source_table : local.table_to_dq_file[table]]
- //count = length(local.matched_dq_file)
-//matched_dq_file   = local.table_to_dq_file[local.table_name]
+
 _parsed_rules = flatten([
     //for dq_file in local.table_to_dq_file : [
-   { for table, file in local.data_quality_spec_file : table => [
+    /*The syntax { for <key>, <value> in <map> : <key> => <value> } is a for expression that iterates over a map.*/
+  { for table, file in local.data_quality_spec_file : table => [
    //for dq_file in local.data_quality_spec_file : [
+  /*The for rule in ... loop iterates over the rules attribute, which is expected to be a list of rules.*/
       for rule in try(yamldecode(file("${path.module}/${file}"))).rules: {
       column               = try(rule.column, null)
       ignore_null          = try(rule.ignoreNull, rule.ignore_null, null)
