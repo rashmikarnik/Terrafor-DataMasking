@@ -1,0 +1,34 @@
+samplingPercent: 100
+rowFilter:
+rules:
+  - column: PIN_DESC
+    dimension: UNIQUENESS
+    name: non-null
+    description: PIN_DESC should be unique
+    threshold: 0.0
+    rowConditionCheckExpectation:
+      sqlExpression: LOWER(PIN_DESC) LIKE 'test'
+  - dimension: VALIDITY
+    name: table-level-check
+    description: Sample table-level check
+    tableConditionExpectation:
+      sqlExpression: COUNT(*) > 10
+# table_level_rules:
+#   - aggregation_expectation:
+#       column: column_name
+#       aggregation: SUM
+#       min_value: 100
+#       max_value: 1000
+#       description: Sum of column_name should be between 100 and 1000
+#   - aggregation_expectation:
+#       column: another_column
+#       aggregation: AVG
+#       min_value: 0
+#       max_value: 100
+#       description: Average of another_column should be between 0 and 100
+
+# - dimension: VALIDITY
+#   name: not-empty-table
+#   description: Sample rule for a non-empty table
+#   tableConditionExpectation:
+#     sqlExpression: COUNT(*) > 0
