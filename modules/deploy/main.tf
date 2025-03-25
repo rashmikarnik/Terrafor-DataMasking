@@ -28,13 +28,14 @@ module "project-services" {
     "dataplex.googleapis.com",
     "iam.googleapis.com",
     "serviceusage.googleapis.com",
+    "bigquerydatapolicy.googleapis.com",
   ]
 }
 
 #random static id
 resource "random_id" "id" {
-keepers = {
+  keepers = {
     first = "${timestamp()}"
-  }     
+  }
   byte_length = 8
 }

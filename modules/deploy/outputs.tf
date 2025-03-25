@@ -7,5 +7,5 @@ output "bigquery_dataset" {
 
 output "bigquery_table" {
   description = "The BigQuery table to use"
-  value       = local.bigquery_table_name
+  value       = var.bigquery_table_name
 }
