@@ -14,6 +14,6 @@
 
 terraform {
   backend "gcs" {
-    bucket = "inlaid-goods-451523-i3-tfstate-rashmi"
+    bucket = "inlaid-goods-451523-i3-tfstate-dataquality"
   }
 }
