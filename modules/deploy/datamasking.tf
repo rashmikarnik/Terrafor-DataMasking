@@ -1,5 +1,5 @@
 data "local_file" "table_schema" {
-  filename = "${path.module}/masking-table-sample_schema.json"
+ filename = "${path.module}/schemas/masking-table-sample_schema.json"
 }
 
 locals {
