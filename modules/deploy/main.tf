@@ -28,6 +28,7 @@ module "project-services" {
     "dataplex.googleapis.com",
     "iam.googleapis.com",
     "serviceusage.googleapis.com",
+    "bigquerydatapolicy.googleapis.com",
   ]
 }
 

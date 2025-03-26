@@ -1,0 +1,12 @@
+[
+  {
+    "mode": "REQUIRED",
+    "name": "id",
+    "type": "BIGNUMERIC"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "status",
+    "type": "STRING"
+  }
+]
