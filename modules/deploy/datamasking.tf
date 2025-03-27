@@ -17,6 +17,7 @@ resource "google_bigquery_table" "my_table" {
   table_id   = var.source_table
   schema     = jsonencode(local.updated_schema)
   depends_on = [ local.updated_schema ]
+  deletion_protection = false
 }
 
 /* Terraform resource of type google_data_catalog_taxonomy, 
