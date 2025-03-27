@@ -17,13 +17,13 @@ resource "google_bigquery_table" "my_table" {
   table_id   = var.source_table
   schema     = jsonencode(local.updated_schema)
   depends_on = [ local.updated_schema ]
-  lifecycle {
-    ignore_changes = [
-      # Allows schema updates outside of Terraform without forcing replacement
-      schema,
-    ]
-  }
-  deletion_protection = false
+  # lifecycle {
+  #   ignore_changes = [
+  #     # Allows schema updates outside of Terraform without forcing replacement
+  #     schema,
+  #   ]
+  # }
+  # deletion_protection = false
 }
 
  # IMPORTANT: Ignore future schema changes within Terraform
