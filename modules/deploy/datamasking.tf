@@ -10,7 +10,7 @@ locals {
     )
   ]
 }
-
+# test comment
 resource "google_bigquery_table" "my_table" {
   project    = var.project_id
   dataset_id = var.source_dataset
